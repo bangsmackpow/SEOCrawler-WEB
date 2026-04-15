@@ -5,7 +5,7 @@ export default defineConfig({
   out: './src/db/migrations',
   dialect: 'sqlite',
   dbCredentials: {
-    wranglerConfigPath: './wrangler.jsonc',
+    wranglerConfigPath: './wrangler.toml',
     dbName: 'seocrawler-db',
   },
 })
