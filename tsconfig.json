@@ -3,25 +3,24 @@
     "target": "ES2022",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
-    "skipLibCheck": true,
     "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
     "jsx": "react-jsx",
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
-    "baseUrl": ".",
+    "isolatedModules": true,
+    "types": ["@cloudflare/workers-types", "vite/client"],
     "paths": {
-      "@/*": ["./src/*"]
-    }
+      "~/*": ["./src/*"]
+    },
+    "rootDirs": ["./src", "."]
   },
-  "include": ["src", "functions"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "drizzle.config.ts", "vite.config.ts"],
+  "exclude": ["node_modules", "dist"]
 }
