@@ -22,6 +22,11 @@ app.get('/health', (c) => c.json({ ok: true }))
 
 app.get('/check', (c) => c.text('ok'))
 
+app.get('/check-cookie', (c) => {
+  const h = c.req.header('cookie') || ''
+  return c.text('h: ' + h)
+})
+
 function getUser(c: any): { sub: string; email: string; is_admin: boolean } | null {
   let token = c.req?.cookie?.('token')
   if (!token) {
