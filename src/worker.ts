@@ -20,10 +20,7 @@ app.get('/', (c) => {
 
 app.get('/health', (c) => c.json({ ok: true }))
 
-app.get('/chk', (c) => {
-  const cookieHeader = c.req.headers.get('cookie') || 'none'
-  return c.text('Cookie: ' + cookieHeader)
-})
+app.get('/check', (c) => c.text('ok'))
 
 function getUser(c: any): { sub: string; email: string; is_admin: boolean } | null {
   let token = c.req?.cookie?.('token')
