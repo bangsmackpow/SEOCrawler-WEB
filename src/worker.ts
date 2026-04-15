@@ -21,9 +21,8 @@ app.get('/', (c) => {
 app.get('/health', (c) => c.json({ ok: true }))
 
 app.get('/debug', (c) => {
-  const cookieHeader = c.req.headers.get('cookie')
-  const token = c.req.cookie('token')
-  return c.json({ cookieHeader, tokenparsed: token })
+  const cookieHeader = c.req.headers.get('cookie') || 'none'
+  return c.text('Cookie: ' + cookieHeader)
 })
 
 function getUser(c: any): { sub: string; email: string; is_admin: boolean } | null {
