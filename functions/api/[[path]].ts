@@ -12,7 +12,6 @@ const api = new Hono<{ Bindings: Bindings }>()
 
 api.use('*', cors())
 
-// Auth helpers
 function getUser(c: { req: { cookie: (k: string) => string | undefined }, env: Bindings }) {
   const token = c.req.cookie('token')
   if (!token) return null
@@ -24,7 +23,6 @@ function getUser(c: { req: { cookie: (k: string) => string | undefined }, env: B
   }
 }
 
-// Auth routes
 api.post('/api/auth/register', async (c) => {
   const { email, password, name } = await c.req.json().catch(() => ({}))
   if (!email || !password || !name) {
@@ -37,15 +35,18 @@ api.post('/api/auth/register', async (c) => {
     return c.json({ error: 'Email already registered' }, 400)
   }
 
-  // Hash with bcrypt
+  const userCount = await db.prepare('SELECT COUNT(*) as count FROM users').first<{ count: number }>()
+  const isFirstUser = !userCount || userCount.count === 0
+  const isAdmin = isFirstUser ? 1 : 0
+
   const hash = await bcrypt.hash(password, 10)
   const id = crypto.randomUUID()
-  await db.prepare('INSERT INTO users (id, email, password_hash, name) VALUES (?, ?, ?, ?)')
-    .bind(id, email, hash, name).run()
+  await db.prepare('INSERT INTO users (id, email, password_hash, name, is_admin) VALUES (?, ?, ?, ?, ?)')
+    .bind(id, email, hash, name, isAdmin).run()
 
-  const token = btoa(JSON.stringify({ sub: id, email, is_admin: false }))
+  const token = btoa(JSON.stringify({ sub: id, email, is_admin: isFirstUser }))
   c.header('Set-Cookie', `token=${token}; HttpOnly; Path=/; SameSite=Lax`)
-  return c.json({ id, email, name, is_admin: false })
+  return c.json({ id, email, name, is_admin: isFirstUser })
 })
 
 api.post('/api/auth/login', async (c) => {
@@ -72,12 +73,12 @@ api.post('/api/auth/login', async (c) => {
   return c.json({ id: user.id, email: user.email, name: user.name, is_admin: user.is_admin === 1 })
 })
 
-api.post('/api/auth/logout', (c) => {
+api.post('/auth/logout', (c) => {
   c.header('Set-Cookie', 'token=; HttpOnly; Path=/; Max-Age=0')
   return c.json({ ok: true })
 })
 
-api.get('/api/auth/me', (c) => {
+api.get('/auth/me', (c) => {
   const user = getUser(c)
   if (!user) {
     return c.json({ error: 'Not authenticated' }, 401)
@@ -85,7 +86,6 @@ api.get('/api/auth/me', (c) => {
   return c.json({ id: user.sub, email: user.email })
 })
 
-// Reports routes
 api.get('/api/reports', async (c) => {
   const user = getUser(c)
   if (!user) {
@@ -164,7 +164,6 @@ api.post('/api/reports/:id/share', async (c) => {
   return c.json({ ok: true })
 })
 
-// Admin routes
 api.get('/api/admin/settings', async (c) => {
   const user = getUser(c)
   if (!user || !user.is_admin) {

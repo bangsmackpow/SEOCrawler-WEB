@@ -1,7 +1,7 @@
 {
   "name": "seocrawler-web",
+  "account_id": "0e528c886015cce349076fb7db222a88",
   "compatibility_date": "2024-04-14",
-  "main": "src/worker.ts",
   "d1_databases": [
     {
       "binding": "DB",
@@ -9,7 +9,6 @@
       "database_id": "35f3b153-fb3b-4d7d-8ad3-87e98044a969"
     }
   ],
-  "kv_namespaces": [],
   "r2_buckets": [
     {
       "binding": "REPORTS",
