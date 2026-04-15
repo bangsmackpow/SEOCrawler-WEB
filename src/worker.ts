@@ -13,19 +13,9 @@ const app = new Hono<{ Bindings: Bindings }>()
 app.use('*', cors())
 
 app.get('/', (c) => {
-  return c.json({ 
-    name: 'SEOCrawler API', 
-    version: '1.0.0',
-    endpoints: [
-      '/api/auth/register',
-      '/api/auth/login', 
-      '/api/auth/logout',
-      '/api/auth/me',
-      '/api/reports',
-      '/api/admin/users',
-      '/api/admin/settings'
-    ]
-  ])
+  return c.text('SEOCrawler API - Visit /api/* endpoints', 200, {
+    'Content-Type': 'text/plain'
+  })
 })
 
 app.get('/health', (c) => c.json({ ok: true }))
