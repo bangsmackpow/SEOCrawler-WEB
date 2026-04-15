@@ -20,7 +20,7 @@ app.get('/', (c) => {
 
 app.get('/health', (c) => c.json({ ok: true }))
 
-app.get('/debug', (c) => {
+app.get('/chk', (c) => {
   const cookieHeader = c.req.headers.get('cookie') || 'none'
   return c.text('Cookie: ' + cookieHeader)
 })
