@@ -14,6 +14,22 @@ const app = new Hono<{ Bindings: Bindings }>()
 app.use('*', cors())
 app.use('*', compress())
 
+app.get('/', (c) => {
+  return c.json({ 
+    name: 'SEOCrawler API', 
+    version: '1.0.0',
+    endpoints: [
+      '/api/auth/register',
+      '/api/auth/login', 
+      '/api/auth/logout',
+      '/api/auth/me',
+      '/api/reports',
+      '/api/admin/users',
+      '/api/admin/settings'
+    ]
+  })
+})
+
 function getUser(c: { req: { cookie: (k: string) => string | undefined }, env: Bindings }) {
   const token = c.req.cookie('token')
   if (!token) return null
