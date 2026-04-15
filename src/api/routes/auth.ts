@@ -28,6 +28,11 @@ auth.post('/register', async (c) => {
     return c.json({ error: 'Email already registered' }, 400)
   }
 
+  // Check if this is the first user - make them admin
+  const allUsers = await db.query.users.findMany()
+  const isFirstUser = allUsers.length === 0
+  const isAdmin = isFirstUser
+
   const id = crypto.randomUUID()
   const passwordHash = await bcrypt.hash(password, 10)
 
@@ -36,13 +41,13 @@ auth.post('/register', async (c) => {
     email,
     passwordHash,
     name,
-    isAdmin: false,
+    isAdmin,
   })
 
-  const token = btoa(JSON.stringify({ sub: id, email, isAdmin: false }))
+  const token = btoa(JSON.stringify({ sub: id, email, isAdmin }))
   c.header('Set-Cookie', `token=${token}; HttpOnly; Path=/; SameSite=Lax`)
 
-  return c.json({ id, email, name, isAdmin: false })
+  return c.json({ id, email, name, isAdmin })
 })
 
 // Login
