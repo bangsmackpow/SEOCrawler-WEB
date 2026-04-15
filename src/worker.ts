@@ -21,12 +21,17 @@ app.get('/', (c) => {
 app.get('/health', (c) => c.json({ ok: true }))
 
 function getUser(c: any): { sub: string; email: string; is_admin: boolean } | null {
-  const token = c.req?.cookie?.('token')
+  let token = c.req?.cookie?.('token')
+  if (!token) {
+    const header = c.req?.headers?.get('cookie')
+    if (header) {
+      const match = header.match(/token=([^;]+)/)
+      if (match) token = match[1]
+    }
+  }
   if (!token) return null
   try {
-    const parts = token.split('.')
-    if (parts.length < 2) return null
-    const parsed = JSON.parse(atob(parts[1]))
+    const parsed = JSON.parse(atob(token))
     return { sub: parsed.sub, email: parsed.email, is_admin: parsed.is_admin }
   } catch {
     return null
