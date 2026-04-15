@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
+import bcrypt from 'bcryptjs'
 
 type Bindings = {
   DB: D1Database
@@ -36,8 +37,8 @@ api.post('/api/auth/register', async (c) => {
     return c.json({ error: 'Email already registered' }, 400)
   }
 
-  // Simple hash
-  const hash = btoa(password + 'salt') // In production use bcrypt
+  // Hash with bcrypt
+  const hash = await bcrypt.hash(password, 10)
   const id = crypto.randomUUID()
   await db.prepare('INSERT INTO users (id, email, password_hash, name) VALUES (?, ?, ?, ?)')
     .bind(id, email, hash, name).run()
@@ -61,8 +62,8 @@ api.post('/api/auth/login', async (c) => {
     return c.json({ error: 'Invalid email or password' }, 401)
   }
 
-  const hash = btoa(password + 'salt')
-  if (user.password_hash !== hash) {
+  const valid = await bcrypt.compare(password, user.password_hash)
+  if (!valid) {
     return c.json({ error: 'Invalid email or password' }, 401)
   }
 
@@ -220,7 +221,7 @@ api.post('/api/admin/users', async (c) => {
   }
 
   const db = c.env.DB
-  const hash = btoa(password + 'salt')
+  const hash = await bcrypt.hash(password, 10)
   const id = crypto.randomUUID()
 
   await db.prepare('INSERT INTO users (id, email, password_hash, name) VALUES (?, ?, ?, ?)')
