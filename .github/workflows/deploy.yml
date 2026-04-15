@@ -22,8 +22,5 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Wrangler
-        run: npm install wrangler@latest
-
       - name: Deploy to Cloudflare Workers
         run: npx wrangler deploy
