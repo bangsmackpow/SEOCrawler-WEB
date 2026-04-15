@@ -2,71 +2,58 @@
 
 ## Project Context
 
-This is a Cloudflare Pages application for running SEO audits on websites.
+Cloudflare Pages application with Hono API + Drizzle ORM + TanStack Start.
 
 ## Key Files
 
 | File | Purpose |
 |------|---------|
-| `wrangler.jsonc` | Cloudflare config - D1/R2 bindings here |
-| `functions/api/[[path]].ts` | All API endpoints |
-| `src/pages/Admin.tsx` | Settings, user management |
-| `migrations/0000_initial.sql` | Database schema |
-| `src/lib/render-seo-report.ts` | HTML report generator |
+| `src/db/schema.ts` | Drizzle ORM schema |
+| `src/api/routes/*.ts` | API endpoints |
+| `src/services/crawler.ts` | SEO crawler |
+| `src/client/App.tsx` | Frontend app |
+| `wrangler.jsonc` | Cloudflare config |
+| `drizzle.config.ts` | Drizzle config |
 
 ## Deployment Commands
 
 ```bash
 cd seocrawler-web
+
+# Install deps
 npm install
 
-# Create resources
-wrangler d1 create seocrawler-db
-wrangler r2 bucket create seocrawler-reports
+# Generate Drizzle migrations
+npx drizzle-kit generate
 
-# Apply schema
-wrangler d1 execute seocrawler-db --file=./migrations/0000_initial.sql
+# Push to D1
+npx drizzle-kit push
 
-# Build and deploy
-npm run build
-wrangler pages deploy
+# Build
+npm run build:frontend
+
+# Deploy
+npm run deploy
 ```
 
 ## Important Notes
 
-1. **D1 Database** - Must be created first, then ID added to `wrangler.jsonc`
-2. **R2 Bucket** - Must be created in same account
-3. **JWT Secret** - Set via `wrangler secret put SECRET`
-4. **Settings** - Stored in D1 `settings` table, managed via `/admin` page
-
-## Running Tests
-
-No tests configured yet. Add tests and run with:
-```bash
-npm test
-```
-
-## Linting
-
-Run lint before commits:
-```bash
-npm run lint
-```
+1. **JWT_SECRET** - Must be set in Cloudflare Pages environment variables
+2. **D1 Database** - Already created with ID: `35f3b153-fb3b-4d7d-8ad3-87e98044a969`
+3. **R2 Bucket** - Already created: `seocrawler-reports`
 
 ## Common Issues
 
 | Issue | Solution |
 |-------|----------|
-| API 404 | Check function path matches route |
-| Auth fails | Verify SECRET in wrangler |
-| R2 not found | Check bucket name in wrangler.jsonc |
-| D1 errors | Run migration before deploy |
+| Auth fails | Check JWT_SECRET in Cloudflare |
+| D1 errors | Run `drizzle-kit push` |
+| Build fails | Check package.json dependencies |
 
 ## Tech Stack
 
-- Hono (API framework)
-- React 18 (UI)
-- shadcn/ui (components)
-- Cloudflare D1 (SQLite database)
-- Cloudflare R2 (file storage)
-- Tailwind CSS
+- Hono (API)
+- Drizzle ORM
+- TanStack Start
+- bcrypt
+- Cloudflare D1/R2

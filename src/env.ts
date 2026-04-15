@@ -1,6 +1,6 @@
 export type Bindings = {
   DB: D1Database
-  SECRET: string
+  JWT_SECRET: string
   OPENROUTER_API_KEY?: string
 }
 

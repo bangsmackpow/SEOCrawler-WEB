@@ -1,133 +1,97 @@
 # SEOCrawler-WEB
 
-Multi-user SEO audit platform deployed on Cloudflare Pages with D1 (SQLite) authentication and R2 storage.
+SEO Audit Platform - Built with BN-WAS (Built Networks Web App Standard)
 
 ## Tech Stack
 
 | Component | Technology |
 |-----------|------------|
-| Framework | Hono (API) + React (UI) |
-| UI Components | shadcn/ui |
-| Database | Cloudflare D1 |
-| Storage | Cloudflare R2 |
-| Deployment | Cloudflare Pages |
+| Backend | Hono (Cloudflare Pages Functions) |
+| Database | Drizzle ORM + Cloudflare D1 |
+| Frontend | TanStack Start |
+| Auth | bcrypt |
 
-## Features
-
-- **Email/password authentication** - Multi-user accounts
-- **Run SEO audits** - Background execution
-- **View reports** - Download HTML/PDF exports
-- **Share reports** - Share with other users via email
-- **Admin panel** - Manage users, API keys, SMTP settings
-
-## Project Structure
-
-```
-seocrawler-web/
-├── src/                    # React UI
-│   ├── pages/              # Page components
-│   ├── components/         # UI components
-│   └── lib/                # Utils, renderers
-├── functions/              # Cloudflare Pages Functions (Hono API)
-│   └── api/                # API endpoints
-├── skills/                 # Kilo skills
-├── migrations/             # D1 schema
-├── wrangler.jsonc          # Cloudflare config
-└── package.json
-```
-
-## Getting Started
-
-### 1. Install dependencies
+## Quick Start
 
 ```bash
+# Install dependencies
 npm install
-```
 
-### 2. Configure Cloudflare
+# Generate Drizzle migration
+npx drizzle-kit generate
 
-Update `wrangler.jsonc` with your:
-- D1 database ID
-- R2 bucket name
-- `SECRET` for JWT signing
+# Push schema to D1
+npx drizzle-kit push
 
-### 3. Create database
+# Deploy to Cloudflare
+npm run deploy
 
-```bash
-# Create D1 database
-wrangler d1 create seocrawler-db
-
-# Apply schema
-wrangler d1 execute seocrawler-db --file=./migrations/0000_initial.sql
-```
-
-### 4. Create R2 bucket
-
-```bash
-wrangler r2 bucket create seocrawler-reports
-```
-
-### 5. Deploy
-
-```bash
-# Build frontend
-npm run build
-
-# Deploy to Cloudflare Pages
-wrangler pages deploy
+# Or build frontend only
+npm run build:frontend
 ```
 
 ## Environment Variables
 
-Set in `wrangler.jsonc` or via `wrangler secret put`:
+Set in Cloudflare Pages:
 
 | Variable | Description |
 |----------|-------------|
-| `SECRET` | JWT signing secret |
-| `OPENROUTER_API_KEY` | For Kilo/AI agents (stored in D1 settings) |
+| `JWT_SECRET` | Secret for JWT signing |
+| `OPENROUTER_API_KEY` | Optional - for Kilo prompts |
 
-## API Endpoints
+## Project Structure
+
+```
+src/
+├── db/
+│   ├── schema.ts     # Drizzle schema
+│   └── index.ts     # DB connection
+├── api/
+│   ├── index.ts    # Main Hono app
+│   └── routes/
+│       ├── auth.ts    # Auth routes
+│       ├── reports.ts # Reports CRUD
+│       └── crawl.ts  # SEO crawl
+├── services/
+│   └── crawler.ts  # Internal SEO crawler
+├── client/
+│   ├── App.tsx     # TanStack Start app
+│   └── index.tsx    # Entry config
+├── env.ts           # Environment types
+└── worker.ts       # Cloudflare Worker entry
+```
+
+## API Routes
 
 | Method | Path | Description |
 |--------|------|-------------|
 | POST | `/api/auth/register` | Create account |
 | POST | `/api/auth/login` | Login |
 | POST | `/api/auth/logout` | Logout |
-| GET | `/api/auth/me` | Current user |
+| GET | `/api/auth/me` | Get current user |
 | GET | `/api/reports` | List reports |
-| POST | `/api/reports` | Start audit |
-| GET | `/api/reports/:id` | Get report |
+| POST | `/api/reports` | Create report |
+| GET | `/api/reports/:id` | Get report details |
 | POST | `/api/reports/:id/share` | Share report |
-| GET | `/api/admin/settings` | Get settings (admin) |
-| POST | `/api/admin/settings` | Save settings (admin) |
-| GET | `/api/admin/users` | List users (admin) |
-| POST | `/api/admin/users` | Add user (admin) |
+| POST | `/api/crawl/:id/start` | Start crawl |
+| GET | `/api/crawl/:id/status` | Get crawl status |
 
-## Pages
+## Development
 
-| Route | Description |
-|-------|-------------|
-| `/` | Landing page |
-| `/login` | Login |
-| `/register` | Register |
-| `/dashboard` | Reports dashboard |
-| `/reports/:id` | Report details |
-| `/admin` | Admin panel |
+```bash
+# Local development
+npm run dev
 
-## Kilo Skills
+# Deploy
+npm run deploy
+```
 
-The SEO workflow uses three Kilo skills:
+## Cloudflare Setup
 
-1. **seo-specialist** - Technical SEO crawl
-2. **content-marketer** - Content strategy
-3. **sales-engineer** - Sales proposal
-
-Configure API key in `/admin` page.
-
-## HTML Renderers
-
-`src/lib/render-seo-report.ts` - TypeScript port of Python renderers.
-Generates styled HTML reports from markdown audit data.
+1. Create D1 database
+2. Create R2 bucket for reports
+3. Set `JWT_SECRET` in Pages environment variables
+4. Connect GitHub repo in Cloudflare Pages
 
 ## License
 
