@@ -6,68 +6,7 @@
     <title>SEOCrawler - SEO Audit Platform</title>
   </head>
   <body>
-    <div id="root">Loading...</div>
-    <script type="module">
-      import { createElement } from 'react';
-      import { createRoot } from 'react-dom/client';
-      import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
-
-      function Landing() {
-        return createElement('div', { className: 'min-h-screen bg-gray-50' },
-          createElement('header', { className: 'bg-white border-b' },
-            createElement('nav', { className: 'container mx-auto flex h-16 items-center justify-between px-4' },
-              createElement('span', { className: 'text-xl font-bold' }, 'SEOCrawler'),
-              createElement('div', { className: 'flex gap-4' },
-                createElement(Link, { to: '/login', className: 'text-sm hover:underline' }, 'Login'),
-                createElement(Link, { to: '/register', className: 'text-sm hover:underline' }, 'Register')
-              )
-            )
-          ),
-          createElement('main', { className: 'container mx-auto py-24 text-center' },
-            createElement('h1', { className: 'text-4xl font-bold' }, 'SEO Audit Platform'),
-            createElement('p', { className: 'mt-4 text-gray-600' }, 'Run comprehensive SEO audits on any domain'),
-            createElement(Link, { to: '/register', className: 'mt-8 inline-block bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700' }, 'Get Started')
-          )
-        );
-      }
-
-      function Login() {
-        return createElement('div', { className: 'min-h-screen flex items-center justify-center' },
-          createElement('div', { className: 'bg-white p-8 rounded-lg shadow-md w-full max-w-md' },
-            createElement('h2', { className: 'text-2xl font-bold mb-4' }, 'Login'),
-            createElement('form', { className: 'space-y-4' },
-              createElement('input', { type: 'email', placeholder: 'Email', className: 'w-full p-2 border rounded' }),
-              createElement('input', { type: 'password', placeholder: 'Password', className: 'w-full p-2 border rounded' }),
-              createElement('button', { type: 'submit', className: 'w-full bg-blue-600 text-white py-2 rounded' }, 'Sign In')
-            )
-          )
-        );
-      }
-
-      function Register() {
-        return createElement('div', { className: 'min-h-screen flex items-center justify-center' },
-          createElement('div', { className: 'bg-white p-8 rounded-lg shadow-md w-full max-w-md' },
-            createElement('h2', { className: 'text-2xl font-bold mb-4' }, 'Create Account'),
-            createElement('form', { className: 'space-y-4' },
-              createElement('input', { type: 'text', placeholder: 'Name', className: 'w-full p-2 border rounded' }),
-              createElement('input', { type: 'email', placeholder: 'Email', className: 'w-full p-2 border rounded' }),
-              createElement('input', { type: 'password', placeholder: 'Password', className: 'w-full p-2 border rounded' }),
-              createElement('button', { type: 'submit', className: 'w-full bg-blue-600 text-white py-2 rounded' }, 'Create Account')
-            )
-          )
-        );
-      }
-
-      const App = () => createElement(BrowserRouter, null,
-        createElement(Routes, null,
-          createElement(Route, { path: '/', element: createElement(Landing) }),
-          createElement(Route, { path: '/login', element: createElement(Login) }),
-          createElement(Route, { path: '/register', element: createElement(Register) })
-        )
-      );
-
-      const root = createRoot(document.getElementById('root'));
-      root.render(createElement(App));
-    </script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
