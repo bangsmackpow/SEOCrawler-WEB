@@ -1,0 +1,32 @@
+{
+  "name": "seocrawler-web",
+  "compatibility_date": "2024-04-14",
+  "pages_build_output_dir": "dist",
+  
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "seocrawler-db",
+      "database_id": "<your-database-id>",
+      "migrations": "./migrations"
+    }
+  ],
+  
+  "r2_buckets": [
+    {
+      "binding": "REPORTS",
+      "bucket_name": "seocrawler-reports",
+      "jurisdiction": "auto"
+    }
+  ],
+  
+  "vars": {
+    "APP_URL": "https://seocrawler-web.pages.dev",
+    "NODE_ENV": "production"
+  },
+  
+  "secrets": [
+    { "name": "OPENROUTER_API_KEY" },
+    { "name": "SMTP_PASSWORD" }
+  ]
+}
