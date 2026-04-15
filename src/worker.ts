@@ -1,6 +1,5 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
-import { compress } from 'hono/compress'
 import bcrypt from 'bcryptjs'
 
 type Bindings = {
@@ -12,7 +11,6 @@ type Bindings = {
 const app = new Hono<{ Bindings: Bindings }>()
 
 app.use('*', cors())
-app.use('*', compress())
 
 app.get('/', (c) => {
   return c.json({ 
@@ -27,8 +25,10 @@ app.get('/', (c) => {
       '/api/admin/users',
       '/api/admin/settings'
     ]
-  })
+  ])
 })
+
+app.get('/health', (c) => c.json({ ok: true }))
 
 function getUser(c: { req: { cookie: (k: string) => string | undefined }, env: Bindings }) {
   const token = c.req.cookie('token')
