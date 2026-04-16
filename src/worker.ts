@@ -10,7 +10,10 @@ type Bindings = {
 
 const app = new Hono<{ Bindings: Bindings }>()
 
-app.use('*', cors())
+app.use('*', cors({
+  origin: '*',
+  credentials: true,
+}))
 
 app.get('/', (c) => {
   return c.text('SEOCrawler API - Visit /api/* endpoints', 200, {

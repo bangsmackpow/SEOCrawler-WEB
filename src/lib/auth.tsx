@@ -1,5 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 
+const API_BASE = 'https://seocrawler-web.curtislamasters.workers.dev'
+
 interface User {
   id: string
   email: string
@@ -23,7 +25,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function checkAuth() {
     try {
-      const res = await fetch('/api/auth/me')
+      const res = await fetch(`${API_BASE}/api/auth/me`)
       if (res.ok) {
         const user = await res.json()
         setState({ user, loading: false })
@@ -36,7 +38,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function login(email: string, password: string) {
-    const res = await fetch('/api/auth/login', {
+    const res = fetch(`${API_BASE}/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
@@ -50,7 +52,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function register(email: string, password: string, name: string) {
-    const res = await fetch('/api/auth/register', {
+    const res = fetch(`${API_BASE}/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password, name }),
@@ -64,7 +66,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function logout() {
-    await fetch('/api/auth/logout', { method: 'POST' })
+    fetch(`${API_BASE}/api/auth/logout', { method: 'POST' })
     setState({ user: null, loading: false })
   }
 
