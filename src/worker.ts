@@ -28,21 +28,17 @@ app.get('/check-cookie', (c) => {
 })
 
 function getUser(c: any): { sub: string; email: string; is_admin: boolean } | null {
-  let token = c.req?.cookie?.('token')
-  if (!token) {
-    const header = c.req?.headers?.get('cookie')
-    if (header) {
-      const match = header.match(/token=([^;]+)/)
-      if (match) token = match[1]
-    }
-  }
-  if (!token) return null
-  try {
-    const parsed = JSON.parse(atob(token))
+  const cookieHeader = c.req.header('cookie') || ''
+  const match = cookieHeader.match(/token=([^;]+)/)
+  if (!match) return null
+try {
+    const decoded = atob(match[1])
+    const parsed = JSON.parse(decoded)
     return { sub: parsed.sub, email: parsed.email, is_admin: parsed.is_admin }
   } catch {
     return null
   }
+}
 }
 
 app.post('/api/auth/register', async (c) => {
