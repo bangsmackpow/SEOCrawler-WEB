@@ -1,15 +1,20 @@
 # SEOCrawler-WEB
 
-SEO Audit Platform - Built with BN-WAS (Built Networks Web App Standard)
+Multi-user SEO Audit Platform built on Cloudflare Workers + Pages.
+
+## URLs
+
+- **Frontend**: https://seocrawler-web.pages.dev
+- **API**: https://seocrawler-web.curtislamasters.workers.dev
 
 ## Tech Stack
 
 | Component | Technology |
 |-----------|------------|
-| Backend | Hono (Cloudflare Pages Functions) |
+| API | Hono (Cloudflare Workers) |
 | Database | Drizzle ORM + Cloudflare D1 |
-| Frontend | TanStack Start |
-| Auth | bcrypt |
+| Frontend | React + Vite + Cloudflare Pages |
+| Auth | bcryptjs |
 
 ## Quick Start
 
@@ -17,48 +22,25 @@ SEO Audit Platform - Built with BN-WAS (Built Networks Web App Standard)
 # Install dependencies
 npm install
 
-# Generate Drizzle migration
-npx drizzle-kit generate
-
-# Push schema to D1
-npx drizzle-kit push
-
-# Deploy to Cloudflare
-npm run deploy
-
-# Or build frontend only
+# Build frontend
 npm run build:frontend
+
+# Deploy
 ```
-
-## Environment Variables
-
-Set in Cloudflare Pages:
-
-| Variable | Description |
-|----------|-------------|
-| `JWT_SECRET` | Secret for JWT signing |
-| `OPENROUTER_API_KEY` | Optional - for Kilo prompts |
 
 ## Project Structure
 
 ```
-src/
-├── db/
-│   ├── schema.ts     # Drizzle schema
-│   └── index.ts     # DB connection
-├── api/
-│   ├── index.ts    # Main Hono app
-│   └── routes/
-│       ├── auth.ts    # Auth routes
-│       ├── reports.ts # Reports CRUD
-│       └── crawl.ts  # SEO crawl
-├── services/
-│   └── crawler.ts  # Internal SEO crawler
-├── client/
-│   ├── App.tsx     # TanStack Start app
-│   └── index.tsx    # Entry config
-├── env.ts           # Environment types
-└── worker.ts       # Cloudflare Worker entry
+seocrawler-web/
+├── src/
+│   ├── worker.ts       # Worker API (Hono)
+│   ├── db/
+│   │   └── schema.ts # Drizzle schema
+│   └── lib/
+│       └── auth.tsx # React auth context
+├── wrangler.toml    # Worker config
+├── drizzle.config.ts
+└── dist/           # Built frontend
 ```
 
 ## API Routes
@@ -71,27 +53,30 @@ src/
 | GET | `/api/auth/me` | Get current user |
 | GET | `/api/reports` | List reports |
 | POST | `/api/reports` | Create report |
-| GET | `/api/reports/:id` | Get report details |
+| GET | `/api/reports/:id` | Get report |
 | POST | `/api/reports/:id/share` | Share report |
-| POST | `/api/crawl/:id/start` | Start crawl |
-| GET | `/api/crawl/:id/status` | Get crawl status |
+| GET | `/api/admin/users` | List users (admin) |
+| POST | `/api/admin/settings` | Update settings (admin) |
 
-## Development
+## Deployment
 
+### Frontend (Cloudflare Pages)
 ```bash
-# Local development
-npm run dev
-
-# Deploy
-npm run deploy
+npx wrangler pages deploy dist --project-name=seocrawler-web
 ```
 
-## Cloudflare Setup
+### API (Cloudflare Workers)
+Auto-deploys via GitHub Actions on push to master.
 
-1. Create D1 database
-2. Create R2 bucket for reports
-3. Set `JWT_SECRET` in Pages environment variables
-4. Connect GitHub repo in Cloudflare Pages
+### Manual Deploy
+```bash
+npx wrangler deploy src/worker.ts
+```
+
+## Cloudflare Resources
+
+- D1 Database: `seocrawler-db` (35f3b153-fb3b-4d7d-8ad3-87e98044a969)
+- R2 Bucket: `seocrawler-reports`
 
 ## License
 

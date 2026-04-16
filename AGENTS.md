@@ -2,58 +2,56 @@
 
 ## Project Context
 
-Cloudflare Pages application with Hono API + Drizzle ORM + TanStack Start.
+Cloudflare Pages (frontend) + Cloudflare Workers (API) with Hono + Drizzle ORM + React.
+
+## URLs
+
+- **Frontend**: https://seocrawler-web.pages.dev
+- **API**: https://seocrawler-web.curtislamasters.workers.dev
 
 ## Key Files
 
 | File | Purpose |
 |------|---------|
+| `src/worker.ts` | Worker API |
 | `src/db/schema.ts` | Drizzle ORM schema |
-| `src/api/routes/*.ts` | API endpoints |
-| `src/services/crawler.ts` | SEO crawler |
-| `src/client/App.tsx` | Frontend app |
-| `wrangler.jsonc` | Cloudflare config |
+| `src/lib/auth.tsx` | Auth context |
+| `wrangler.toml` | Worker config |
 | `drizzle.config.ts` | Drizzle config |
 
-## Deployment Commands
+## Deployments
 
+### Frontend (Pages)
 ```bash
 cd seocrawler-web
-
-# Install deps
-npm install
-
-# Generate Drizzle migrations
-npx drizzle-kit generate
-
-# Push to D1
-npx drizzle-kit push
-
-# Build
 npm run build:frontend
+npx wrangler pages deploy dist --project-name=seocrawler-web
+```
 
-# Deploy
-npm run deploy
+### API (Worker)
+```bash
+cd seocrawler-web
+git push origin master  # Auto-deploys via GitHub Actions
 ```
 
 ## Important Notes
 
-1. **JWT_SECRET** - Must be set in Cloudflare Pages environment variables
-2. **D1 Database** - Already created with ID: `35f3b153-fb3b-4d7d-8ad3-87e98044a969`
-3. **R2 Bucket** - Already created: `seocrawler-reports`
+1. **D1 Database** - ID: `35f3b153-fb3b-4d7d-8ad3-87e98044a969`
+2. **R2 Bucket** - Already created: `seocrawler-reports`
+3. **GitHub Actions** - Auto-deploys Worker on push to master
 
 ## Common Issues
 
 | Issue | Solution |
 |-------|----------|
-| Auth fails | Check JWT_SECRET in Cloudflare |
-| D1 errors | Run `drizzle-kit push` |
-| Build fails | Check package.json dependencies |
+| 405 errors | Check CORS settings in worker.ts |
+| Cookie issues | Cookie passed via header, not req.cookie() |
+| D1 errors | Run migration: `npx wrangler d1 execute seocrawler-db --file=migrations/0000.sql --remote` |
 
 ## Tech Stack
 
-- Hono (API)
-- Drizzle ORM
-- TanStack Start
-- bcrypt
-- Cloudflare D1/R2
+- Hono (API in Cloudflare Workers)
+- Drizzle ORM + D1
+- React + Vite
+- bcryptjs
+- Cloudflare R2
