@@ -27,15 +27,27 @@ app.get('/check-cookie', (c) => {
   return c.text('h: ' + h)
 })
 
+app.get('/chk2', (c) => {
+  const cookieHeader = c.req.header('cookie') || 'empty'
+  const match = cookieHeader.match(/token=([^;]+)/)
+  if (!match) return c.text('no match: ' + cookieHeader)
+  try {
+    const decoded = atob(match[1])
+    return c.text('decoded: ' + decoded)
+  } catch (e) {
+    return c.text('error: ' + e)
+  }
+})
+
 function getUser(c: any): { sub: string; email: string; is_admin: boolean } | null {
   const cookieHeader = c.req.header('cookie') || ''
   const match = cookieHeader.match(/token=([^;]+)/)
   if (!match) return null
-try {
+  try {
     const decoded = atob(match[1])
     const parsed = JSON.parse(decoded)
     return { sub: parsed.sub, email: parsed.email, is_admin: parsed.is_admin }
-  } catch {
+  } catch (e) {
     return null
   }
 }
