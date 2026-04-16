@@ -20,25 +20,6 @@ app.get('/', (c) => {
 
 app.get('/health', (c) => c.json({ ok: true }))
 
-app.get('/check', (c) => c.text('ok'))
-
-app.get('/check-cookie', (c) => {
-  const h = c.req.header('cookie') || ''
-  return c.text('h: ' + h)
-})
-
-app.get('/chk2', (c) => {
-  const cookieHeader = c.req.header('cookie') || 'empty'
-  const match = cookieHeader.match(/token=([^;]+)/)
-  if (!match) return c.text('no match: ' + cookieHeader)
-  try {
-    const decoded = atob(match[1])
-    return c.text('decoded: ' + decoded)
-  } catch (e) {
-    return c.text('error: ' + e)
-  }
-})
-
 function getUser(c: any): { sub: string; email: string; is_admin: boolean } | null {
   const cookieHeader = c.req.header('cookie') || ''
   const match = cookieHeader.match(/token=([^;]+)/)
