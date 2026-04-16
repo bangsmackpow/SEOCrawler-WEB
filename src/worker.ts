@@ -51,7 +51,6 @@ function getUser(c: any): { sub: string; email: string; is_admin: boolean } | nu
     return null
   }
 }
-}
 
 app.post('/api/auth/register', async (c) => {
   const { email, password, name } = await c.req.json().catch(() => ({}))
